@@ -50,11 +50,11 @@ function drawCells () {
         const div = document.createElement("div");
         div.className = "cell";
         div.style.backgroundImage = `url(${img.src})`;
-        div.style.backgroundPositionX = -entry.offsetX + "px";
-        div.style.backgroundPositionY = -entry.offsetY + "px";
-        div.style.top = entry.y * cellSize + "px";
-        div.style.left = entry.x * cellSize + "px";
-        div.style.width = cellSize + "px";
+        div.style.backgroundPositionX = (entry.offsetX / img.width * 100) + "%";
+        div.style.backgroundPositionY = (entry.offsetY / img.height * 100) + "%";
+        div.style.top = (entry.y * cellSize / img.height * 100) + "%";
+        div.style.left = (entry.x * cellSize / img.width * 100) + "%";
+        // div.style.width = cellSize + "px";
         div.setAttribute("data-id", entry.id);
         div.setAttribute("data-x", entry.x);
         div.setAttribute("data-y", entry.y);
