@@ -1,6 +1,4 @@
-let puzzle, img, gridSize, cellsCount, cellSize, grid, emptyCell;
-
-function shuffleGrid (grid) {
+function shuffleGrid () {
     return grid
         .map((cell) => [cell, Math.random() * (grid.length - 1)])
         .toSorted((a, b) => b[1] - a[1])
@@ -24,43 +22,50 @@ function moveCell (id) {
         grid[index].x = x2;
         grid[index].y = y2;
 
-        renderCells();
+        animateCellId = id;
+
+        render();
     }
 }
 
-function renderCells () {
-    // Clear cells
-    puzzle.querySelectorAll(".cell").forEach((cell) => cell.remove());
-
+function render () {
     // Get current background dimensions
     const { width, height } = img.getBoundingClientRect();
 
-    const cells = grid.map((cell) => {
-        const div = document.createElement("div");
+    grid.forEach((cell) => {
+        const el = rootEl.querySelector(`[data-id="${cell.id}"].cell`);
 
-        div.className = "cell";
-
-        div.style = `
+        el.style = `
             background-position-x: ${-width / gridSize * cell.offsetX}px;
             background-position-y: ${-height / gridSize * cell.offsetY}px;
             top: ${(cell.y * cellSize / height * 100)}%;
             left: ${(cell.x * cellSize / width * 100)}%;
         `;
 
-        div.dataset.id = cell.id;
-        div.dataset.x = cell.x;
-        div.dataset.y = cell.y;
+        el.dataset.x = cell.x;
+        el.dataset.y = cell.y;
 
+        return el;
+    });
+
+    if (isPuzzleSolved()) {
+        rootEl.classList.add("solved");
+    }
+}
+
+function addCells () {
+    const cells = grid.map((cell) => {
+        const div = document.createElement("div");
+
+        div.className = "cell";
         div.addEventListener("click", moveCell.bind(null, cell.id));
+
+        div.dataset.id = cell.id;
 
         return div;
     });
 
-    puzzle.append(...cells);
-
-    if (isPuzzleSolved()) {
-        puzzle.classList.add("solved");
-    }
+    rootEl.append(...cells);
 }
 
 function isPuzzleSolved () {
@@ -70,12 +75,16 @@ function isPuzzleSolved () {
 }
 
 function setup () {
+    const imageWidth = img.getBoundingClientRect().width;
+
     gridSize = 3;
     cellsCount = gridSize * gridSize - 1;
-    cellSize = img.getBoundingClientRect().width / gridSize;
+    cellSize = imageWidth / gridSize;
     grid = [];
 
-    puzzle.style.setProperty("--background-image", `url(${img.src})`);
+    rootEl.style.setProperty("--background-image", `url(${img.src})`);
+    rootEl.style.setProperty("--background-size", imageWidth + "px");
+    rootEl.style.setProperty("--grid-size", gridSize);
 
     let id = 0;
 
@@ -99,14 +108,15 @@ function setup () {
     };
 
     grid.pop();
-    grid = shuffleGrid(grid);
+    grid = shuffleGrid(grid, gridSize);
 
-    renderCells();
-    puzzle.style.setProperty("--background-size", img.getBoundingClientRect().width + "px");
+    addCells();
+    render();
 }
 
-puzzle = document.querySelector(".slide-puzzle");
-img = puzzle.querySelector("img");
+let gridSize, cellsCount, cellSize, grid, emptyCell, animateCellId;
+let rootEl = document.querySelector(".slide-puzzle");
+let img = rootEl.querySelector("img");
 
 if (img.complete) {
     setup();
