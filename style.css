@@ -66,4 +66,27 @@ main {
         background-repeat: no-repeat;
         border: 1px solid;
     }
+
+    &.solved {
+        img {
+            visibility: visible;
+            animation: fadeIn 1000ms ease-out forwards;
+            opacity: 0;
+        }
+
+        .cell {
+            animation: fadeIn 1000ms ease-out reverse forwards;
+            opacity: 1;
+        }
+    }
+}
+
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+    }
+
+    to {
+        opacity: 1;
+    }
 }

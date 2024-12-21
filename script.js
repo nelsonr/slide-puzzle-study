@@ -5,8 +5,8 @@ function shuffleGrid (grid) {
         .map((cell) => [cell, Math.random() * (grid.length - 1)])
         .toSorted((a, b) => b[1] - a[1])
         .map(([cell], index) => {
-            const y = Math.floor(index / gridSize);
             const x = Math.floor(index % gridSize);
+            const y = Math.floor(index / gridSize);
 
             return { ...cell, x, y };
         });
@@ -24,11 +24,11 @@ function moveCell (id) {
         grid[index].x = x2;
         grid[index].y = y2;
 
-        drawCells();
+        renderCells();
     }
 }
 
-function drawCells () {
+function renderCells () {
     // Clear cells
     puzzle.querySelectorAll(".cell").forEach((cell) => cell.remove());
 
@@ -57,6 +57,16 @@ function drawCells () {
     });
 
     puzzle.append(...cells);
+
+    if (isPuzzleSolved()) {
+        puzzle.classList.add("solved");
+    }
+}
+
+function isPuzzleSolved () {
+    return grid.every((cell) => {
+        return cell.x === cell.offsetX && cell.y === cell.offsetY;
+    });
 }
 
 function setup () {
@@ -91,10 +101,15 @@ function setup () {
     grid.pop();
     grid = shuffleGrid(grid);
 
-    drawCells();
+    renderCells();
     puzzle.style.setProperty("--background-size", img.getBoundingClientRect().width + "px");
 }
 
 puzzle = document.querySelector(".slide-puzzle");
 img = puzzle.querySelector("img");
-img.addEventListener("load", setup);
+
+if (img.complete) {
+    setup();
+} else {
+    img.addEventListener("load", setup);
+}
