@@ -74,6 +74,12 @@ function isPuzzleSolved () {
     });
 }
 
+function restart () {
+    grid = shuffleGrid();
+    render();
+    rootEl.classList.remove("solved");
+}
+
 function setup () {
     const imageWidth = img.getBoundingClientRect().width;
 
@@ -112,9 +118,12 @@ function setup () {
 
     addCells();
     render();
+
+    const playAgainButton = document.getElementById("play-again");
+    playAgainButton.addEventListener("click", restart);
 }
 
-let gridSize, cellsCount, cellSize, grid, emptyCell, animateCellId;
+let gridSize, cellsCount, cellSize, grid, emptyCell, playAgainButton;
 let rootEl = document.querySelector(".slide-puzzle");
 let img = rootEl.querySelector("img");
 
