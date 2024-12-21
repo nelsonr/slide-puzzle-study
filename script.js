@@ -1,27 +1,4 @@
-const puzzle = document.querySelector(".slide-puzzle");
-const img = puzzle.querySelector("img");
-
-const gridSize = 3;
-const cellsCount = gridSize * gridSize - 1;
-const cellSize = img.width / gridSize;
-
-let grid = [];
-let id = 0;
-
-for (let y = 0; y < gridSize; y++) {
-    for (let x = 0; x < gridSize; x++) {
-        grid.push({
-            id: id,
-            x: x,
-            y: y,
-            offsetX: x * cellSize,
-            offsetY: y * cellSize,
-        });
-        id++;
-    }
-}
-
-grid.pop();
+let puzzle, img, gridSize, cellsCount, cellSize, grid, emptyCell;
 
 function shuffleGrid (grid) {
     return grid
@@ -35,42 +12,12 @@ function shuffleGrid (grid) {
         });
 }
 
-grid = shuffleGrid(grid);
-
-let emptyCell = {
-    id: id - 1,
-    x: gridSize - 1,
-    y: gridSize - 1,
-};
-
-function drawCells () {
-    puzzle.querySelectorAll(".cell").forEach((e) => e.remove());
-
-    const cells = grid.map((entry) => {
-        const div = document.createElement("div");
-        div.className = "cell";
-        div.style.backgroundImage = `url(${img.src})`;
-        div.style.backgroundPositionX = (entry.offsetX / img.width * 100) + "%";
-        div.style.backgroundPositionY = (entry.offsetY / img.height * 100) + "%";
-        div.style.top = (entry.y * cellSize / img.height * 100) + "%";
-        div.style.left = (entry.x * cellSize / img.width * 100) + "%";
-        // div.style.width = cellSize + "px";
-        div.setAttribute("data-id", entry.id);
-        div.setAttribute("data-x", entry.x);
-        div.setAttribute("data-y", entry.y);
-        div.addEventListener("click", () => moveCell(entry.id));
-
-        return div;
-    });
-
-    puzzle.append(...cells);
-}
-
 function moveCell (id) {
     const index = grid.findIndex((cell) => cell.id === id);
     const { x: x1, y: y1 } = grid[index];
     const { x: x2, y: y2 } = emptyCell;
 
+    // Checks if cell to move is adjacent to the empty cell
     if ((x1 === x2 && Math.abs(y2 - y1) === 1) || (y1 === y2 && Math.abs(x2 - x1) === 1)) {
         emptyCell.x = x1;
         emptyCell.y = y1;
@@ -81,4 +28,73 @@ function moveCell (id) {
     }
 }
 
-drawCells();
+function drawCells () {
+    // Clear cells
+    puzzle.querySelectorAll(".cell").forEach((cell) => cell.remove());
+
+    // Get current background dimensions
+    const { width, height } = img.getBoundingClientRect();
+
+    const cells = grid.map((cell) => {
+        const div = document.createElement("div");
+
+        div.className = "cell";
+
+        div.style = `
+            background-position-x: ${-width / gridSize * cell.offsetX}px;
+            background-position-y: ${-height / gridSize * cell.offsetY}px;
+            top: ${(cell.y * cellSize / height * 100)}%;
+            left: ${(cell.x * cellSize / width * 100)}%;
+        `;
+
+        div.dataset.id = cell.id;
+        div.dataset.x = cell.x;
+        div.dataset.y = cell.y;
+
+        div.addEventListener("click", moveCell.bind(null, cell.id));
+
+        return div;
+    });
+
+    puzzle.append(...cells);
+}
+
+function setup () {
+    gridSize = 3;
+    cellsCount = gridSize * gridSize - 1;
+    cellSize = img.getBoundingClientRect().width / gridSize;
+    grid = [];
+
+    puzzle.style.setProperty("--background-image", `url(${img.src})`);
+
+    let id = 0;
+
+    for (let y = 0; y < gridSize; y++) {
+        for (let x = 0; x < gridSize; x++) {
+            grid.push({
+                id: id,
+                x: x,
+                y: y,
+                offsetX: x,
+                offsetY: y,
+            });
+            id++;
+        }
+    }
+
+    emptyCell = {
+        id: id - 1,
+        x: gridSize - 1,
+        y: gridSize - 1,
+    };
+
+    grid.pop();
+    grid = shuffleGrid(grid);
+
+    drawCells();
+    puzzle.style.setProperty("--background-size", img.getBoundingClientRect().width + "px");
+}
+
+puzzle = document.querySelector(".slide-puzzle");
+img = puzzle.querySelector("img");
+img.addEventListener("load", setup);
