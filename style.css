@@ -88,7 +88,7 @@ main {
     .board {
         position: relative;
         border: 2px solid;
-        background-color: rgba(0, 0, 0, 0.1);
+        background-color: rgba(0, 0, 0, 0.4);
     }
 
     img {
@@ -110,7 +110,7 @@ main {
         cursor: pointer;
     }
 
-    &.solved {
+    .solved {
         img {
             visibility: visible;
             animation: fadeIn 1000ms ease-out forwards;
