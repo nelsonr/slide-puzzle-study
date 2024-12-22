@@ -124,7 +124,7 @@ function setup () {
 }
 
 let gridSize, cellsCount, cellSize, grid, emptyCell, playAgainButton;
-let rootEl = document.querySelector(".slide-puzzle");
+let rootEl = document.querySelector(".slide-puzzle .board");
 let img = rootEl.querySelector("img");
 
 if (img.complete) {
