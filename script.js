@@ -205,7 +205,7 @@ function loadPuzzleFromPhoto () {
 }
 
 function setup () {
-    console.log("SETUP");
+    rootEl.classList.remove("solved");
 
     loadPuzzleFromPhoto();
 
