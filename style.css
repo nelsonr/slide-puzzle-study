@@ -61,6 +61,8 @@ button {
     display: flex;
     flex-direction: column;
     gap: 1em;
+    position: relative;
+    top: -1.5em;
 }
 
 .title {
@@ -214,6 +216,7 @@ button {
     display: flex;
     justify-content: center;
     position: relative;
+    margin-top: 1em;
 }
 
 input[type="file"] {
