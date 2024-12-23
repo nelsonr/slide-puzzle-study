@@ -76,6 +76,10 @@ function render () {
 }
 
 function addCellElements () {
+    if (document.querySelectorAll(".cell").length > 0) {
+        return;
+    }
+
     const cells = gameState.grid.cells.map((cell) => {
         const div = document.createElement("div");
 
@@ -127,15 +131,41 @@ function setTheme () {
     document.querySelector("main").className = theme;
 }
 
-function setup () {
-    const imageWidth = img.getBoundingClientRect().width;
+function setupPhotoSelection () {
+    const button = document.querySelector("button");
+    const fileInput = document.querySelector("input[type='file']");
 
-    gameState.grid.cellsCount = gameState.grid.size * gameState.grid.size - 1;
-    gameState.grid.cellSize = imageWidth / gameState.grid.size;
+    fileInput.addEventListener("change", function () {
+        const imageURL = URL.createObjectURL(this.files[0])
+        const img = document.querySelector("img");
+
+        img.src = imageURL;
+        loadPuzzleFromPhoto();
+    });
+
+    button.addEventListener("click", (ev) => {
+        ev.preventDefault();
+        fileInput.click();
+    });
+}
+
+function loadPuzzleFromPhoto () {
+    const img = document.querySelector(".slide-puzzle img");
+    const imageWidth = img.getBoundingClientRect().width;
 
     rootEl.style.setProperty("--background-image", `url(${img.src})`);
     rootEl.style.setProperty("--background-size", imageWidth + "px");
     rootEl.style.setProperty("--grid-size", gameState.grid.size);
+
+    gameState.grid.cellSize = imageWidth / gameState.grid.size;
+}
+
+function setup () {
+    loadPuzzleFromPhoto();
+
+    gameState.grid.cells = [];
+    gameState.score.current = 0;
+    gameState.grid.cellsCount = gameState.grid.size * gameState.grid.size - 1;
 
     let id = 0;
 
@@ -161,6 +191,7 @@ function setup () {
     gameState.grid.cells = shuffleGrid();
 
     setTheme();
+    setupPhotoSelection();
     addCellElements();
     render();
 }
