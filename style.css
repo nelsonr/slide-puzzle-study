@@ -14,6 +14,7 @@ body {
 body {
     margin: 0;
     color: #FFF;
+    font-family: "DynaPuff";
 }
 
 main {
@@ -29,6 +30,17 @@ main {
     background-color: hsl(350, 100%, 88%);
     background-blend-mode: luminosity;
     padding: 1.45em;
+
+    &::before {
+        content: "";
+        display: block;
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background-color: rgb(0 0 0 / 16%);
+    }
 }
 
 button {
@@ -43,6 +55,26 @@ button {
     position: relative;
     transform: translateY(10px);
     transition: all 400ms ease-out;
+}
+
+.title {
+    color: gold;
+    text-shadow: 2px 2px rgba(0, 0, 0, 0.5);
+    font-size: 2.5em;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    position: relative;
+    top: -1em;
+}
+
+.moves-counter {
+    display: flex;
+    justify-content: space-between;
+    margin-bottom: 4px;
+    text-shadow: 2px 2px #000;
+    position: relative;
+    font-size: 1.1em;
 }
 
 .slide-puzzle {
@@ -147,5 +179,24 @@ button {
 
     to {
         opacity: 1;
+    }
+}
+
+.theme-01 {
+    background-image: url("img/bg_pattern_01.png");
+    background-color: hsl(350, 100%, 88%);
+
+    .slide-puzzle::before {
+        outline-color: hsl(388 100% 80% / 1);
+
+    }
+}
+
+.theme-02 {
+    background-image: url("img/bg_pattern_02.png");
+    background-color: hsl(100 100% 87% / 1);
+
+    .slide-puzzle::before {
+        outline-color: hsl(159 63% 80% / 1);
     }
 }
