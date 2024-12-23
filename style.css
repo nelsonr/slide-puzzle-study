@@ -145,6 +145,8 @@ button {
         aspect-ratio: 1 / 1;
         height: auto;
         object-fit: cover;
+        position: relative;
+        z-index: 1;
     }
 
     .cell {

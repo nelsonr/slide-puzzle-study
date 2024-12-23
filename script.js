@@ -42,9 +42,8 @@ function moveCell (id) {
 
         animateCellId = id;
 
-        render();
         updateMovesCounter();
-        renderMovesCounter();
+        render();
     }
 }
 
@@ -73,6 +72,8 @@ function render () {
     if (isPuzzleSolved()) {
         rootEl.classList.add("solved");
     }
+
+    renderMovesCounter();
 }
 
 function addCellElements () {
@@ -111,16 +112,8 @@ function updateMovesCounter () {
 function renderMovesCounter () {
     const rootEl = document.querySelector(".moves-counter");
     const current = rootEl.querySelector(".current span");
-    // const best = rootEl.querySelector(".best span");
 
     current.textContent = gameState.score.current.toString().padStart(3, "0");
-    // best.TextContent = gameState.score.best.toString().padStart(3, "0");
-}
-
-function restart () {
-    gameState.grid.cells = shuffleGrid();
-    render();
-    rootEl.classList.remove("solved");
 }
 
 function setTheme () {
@@ -132,21 +125,72 @@ function setTheme () {
 }
 
 function setupPhotoSelection () {
-    const button = document.querySelector("button");
     const fileInput = document.querySelector("input[type='file']");
 
     fileInput.addEventListener("change", function () {
-        const imageURL = URL.createObjectURL(this.files[0])
-        const img = document.querySelector("img");
-
-        img.src = imageURL;
-        loadPuzzleFromPhoto();
+        loadAndResizeImage(URL.createObjectURL(this.files[0]));
     });
+}
 
-    button.addEventListener("click", (ev) => {
-        ev.preventDefault();
-        fileInput.click();
-    });
+function loadAndResizeImage (imgSource) {
+    const canvas = document.createElement("canvas");
+    const ctx = canvas.getContext("2d");
+    const img = document.createElement("img");
+
+    img.src = imgSource;
+    img.style = "visibility: hidden; position: fixed;"
+    img.onload = function () {
+        const { width, height } = rootEl.getBoundingClientRect();
+        const { width: imgWidth, height: imgHeight } = this.getBoundingClientRect();
+        const isSmaller = imgWidth < width && imgHeight < height;
+
+        canvas.width = width;
+        canvas.height = height;
+
+        let sWidth = canvas.width;
+        let sHeight = canvas.height;
+        let dWidth = sWidth;
+        let dHeight = sHeight;
+        let sX = 0;
+        let sY = 0;
+        let dX = 0;
+        let dY = 0;
+
+        if (isSmaller) {
+            dX = (width - imgWidth) / 2;
+            dY = (height - imgHeight) / 2;
+        } else {
+            const smallestSide = imgWidth >= imgHeight ? imgHeight : imgWidth;
+
+            canvas.width = smallestSide * 0.8;
+            canvas.height = smallestSide * 0.8;
+
+            sX = (imgWidth / 2) - (canvas.width / 2);
+            sY = (imgHeight / 2) - (canvas.height / 2);
+            sWidth = canvas.width;
+            sHeight = canvas.width;
+            dWidth = canvas.width;
+            dHeight = canvas.height;
+        }
+
+        ctx.drawImage(this, sX, sY, sWidth, sHeight, dX, dY, dWidth, dHeight);
+
+        canvas.toBlob((blob) => {
+            const puzzleImage = document.querySelector(".slide-puzzle img");
+            const url = URL.createObjectURL(blob); // triggers setup() method
+
+            puzzleImage.addEventListener("load", function () {
+                URL.revokeObjectURL(url);
+                URL.revokeObjectURL(imgSource);
+            }, { once: true })
+
+            puzzleImage.src = url;
+
+            this.remove();
+        }, "image/jpeg");
+    }
+
+    document.body.append(img);
 }
 
 function loadPuzzleFromPhoto () {
@@ -161,6 +205,8 @@ function loadPuzzleFromPhoto () {
 }
 
 function setup () {
+    console.log("SETUP");
+
     loadPuzzleFromPhoto();
 
     gameState.grid.cells = [];
@@ -191,16 +237,16 @@ function setup () {
     gameState.grid.cells = shuffleGrid();
 
     setTheme();
-    setupPhotoSelection();
     addCellElements();
     render();
 }
 
-let rootEl = document.querySelector(".slide-puzzle .board");
-let img = rootEl.querySelector("img");
+const rootEl = document.querySelector(".slide-puzzle .board");
+const img = rootEl.querySelector("img");
 
-if (img.complete) {
-    setup();
-} else {
-    img.addEventListener("load", setup);
-}
+img.addEventListener("load", setup);
+setupPhotoSelection();
+
+const imageIndex = Math.round(Math.random() * 1);
+const imgSrc = ["img/photo_01.jpg", "img/photo_02.jpg"][imageIndex];
+img.src = imgSrc;
