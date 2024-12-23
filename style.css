@@ -14,7 +14,7 @@ body {
 body {
     margin: 0;
     color: #FFF;
-    font-family: "DynaPuff";
+    font-family: "DynaPuff", sans-serif;
 }
 
 main {
@@ -44,14 +44,17 @@ main {
 }
 
 button {
+    font-family: "DynaPuff";
     font-size: 1.45rem;
     background-color: orange;
     color: #FFF;
     border-radius: 4px;
     padding: 8px 16px;
     border: none;
+    border-radius: 16px;
     pointer-events: none;
     position: relative;
+    box-shadow: inset -1px -1px rgb(0 0 0 / 25%), inset 1px 1px rgb(255 255 255 / 25%);
 }
 
 .game {
@@ -141,7 +144,7 @@ button {
         width: 100%;
         aspect-ratio: 1 / 1;
         height: auto;
-        object-fit: contain;
+        object-fit: cover;
     }
 
     .cell {
