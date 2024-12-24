@@ -42,6 +42,17 @@ function moveCell (id) {
 
         animateCellId = id;
 
+        const cell = gameState.grid.cells[index];
+
+        if (cell.x === cell.offsetX && cell.y === cell.offsetY) {
+            console.log("HIT SPARK!");
+            const cellElement = rootEl.querySelector(`[data-id="${cell.id}"].cell`);
+
+            if (cellElement) {
+                cellElement.classList.add("cell--hit-spark");
+            }
+        }
+
         updateMovesCounter();
         render();
     }
@@ -51,20 +62,31 @@ function render () {
     // Get current background dimensions
     const { width, height } = img.getBoundingClientRect();
     const gridSize = gameState.grid.size;
-    const cellSize = gameState.grid.cellSize;
 
     gameState.grid.cells.forEach((cell) => {
         const el = rootEl.querySelector(`[data-id="${cell.id}"].cell`);
+        const x = `${(cell.x * 100)}%`;
+        const y = `${(cell.y * 100)}%`;
 
         el.style = `
             background-position-x: ${-width / gridSize * cell.offsetX}px;
             background-position-y: ${-height / gridSize * cell.offsetY}px;
-            top: ${(cell.y * cellSize / height * 100)}%;
-            left: ${(cell.x * cellSize / width * 100)}%;
+            transform: translate(${x}, ${y});
         `;
 
         el.dataset.x = cell.x;
         el.dataset.y = cell.y;
+
+        if (el.classList.contains("cell--hit-spark")) {
+            el.addEventListener("transitionend", function () {
+                const { top, left, width } = this.getBoundingClientRect();
+                const x = (left + width / 2);
+                const y = (top + 10);
+
+                renderHitSpark(x, y);
+                this.classList.remove("cell--hit-spark");
+            }, { once: true })
+        }
 
         return el;
     });
@@ -74,6 +96,29 @@ function render () {
     }
 
     renderMovesCounter();
+
+    if (document.querySelector(".no-transition")) {
+        setTimeout(() => {
+            document.querySelector(".no-transition").classList.remove("no-transition");
+        }, 400)
+    }
+}
+
+function renderHitSpark (x, y) {
+    const effectsEl = document.querySelector(".effects");
+    const hitSparkEl = effectsEl.querySelector(".hit-spark");
+    const { width, height } = hitSparkEl.getBoundingClientRect();
+
+    const instance = hitSparkEl.cloneNode(true);
+    instance.style = `top: ${y + height / 2}px; left: ${x - width / 2}px;`;
+    // instance.onanimationend = function () {
+    //     setTimeout(() => {
+    //         this.remove();
+    //     }, 300);
+    // }
+
+    effectsEl.append(instance);
+    instance.classList.add("hit-spark--animate");
 }
 
 function addCellElements () {

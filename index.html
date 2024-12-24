@@ -16,12 +16,14 @@
     <main>
         <div class="game">
             <div class="title">Photo Puzzle</div>
+
             <div class="moves-counter">
                 <div class="current">Moves: <span>000</span></div>
             </div>
-            <div class="slide-puzzle">
+
+            <div class="slide-puzzle no-transition">
                 <div class="board">
-                    <img src="" width="640" height="640" alt="Sunset near beach">
+                    <img src="" width="640" height="640" class="photo" alt="Sunset near beach">
                 </div>
             </div>
 
@@ -30,6 +32,14 @@
                     <input type="file" name="photo" id="photo" accept="image/jpeg, image/png">
                     <button id="select-photo">Choose Photo</button>
                 </label>
+            </div>
+
+            <div class="effects">
+                <div class="hit-spark">
+                    <img src="img/hit_spark.png" class="hit-spark__left">
+                    <img src="img/hit_spark.png" class="hit-spark__center">
+                    <img src="img/hit_spark.png" class="hit-spark__right">
+                </div>
             </div>
         </div>
     </main>
