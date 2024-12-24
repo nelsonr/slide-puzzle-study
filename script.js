@@ -111,11 +111,11 @@ function renderHitSpark (x, y) {
 
     const instance = hitSparkEl.cloneNode(true);
     instance.style = `top: ${y + height / 2}px; left: ${x - width / 2}px;`;
-    // instance.onanimationend = function () {
-    //     setTimeout(() => {
-    //         this.remove();
-    //     }, 300);
-    // }
+    instance.onanimationend = function () {
+        setTimeout(() => {
+            this.remove();
+        }, 300);
+    }
 
     effectsEl.append(instance);
     instance.classList.add("hit-spark--animate");
